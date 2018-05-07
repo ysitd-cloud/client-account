@@ -13,7 +13,6 @@ import (
 
 type GatewayClient struct {
 	Endpoint string
-	Token    string
 	Client   *http.Client `inject:""`
 }
 
@@ -44,8 +43,6 @@ func (c *GatewayClient) ValidateUserPassword(ctx context.Context, username, pass
 	if err != nil {
 		return nil, err
 	}
-
-	req.Header.Set("Authorization", "Bearer "+c.Token)
 
 	resp, err := c.Client.Do(req.WithContext(ctx))
 	if err != nil {
