@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	pb "code.ysitd.cloud/api/account"
+	api "code.ysitd.cloud/api/account"
 )
 
 type HttpClient struct {
@@ -25,14 +25,12 @@ func (c *HttpClient) url(path string) *url.URL {
 	return &u
 }
 
-func (c *HttpClient) Close() {}
-
 func (c *HttpClient) GetTransport() string {
 	return c.Transport
 }
 
-func (c *HttpClient) ValidateUserPassword(ctx context.Context, username, password string) (*pb.ValidateUserReply, error) {
-	body, err := json.Marshal(&pb.ValidateUserRequest{
+func (c *HttpClient) ValidateUserPassword(ctx context.Context, username, password string) (*api.ValidateUserReply, error) {
+	body, err := json.Marshal(&api.ValidateUserRequest{
 		Username: username,
 		Password: password,
 	})
@@ -52,7 +50,7 @@ func (c *HttpClient) ValidateUserPassword(ctx context.Context, username, passwor
 
 	defer resp.Body.Close()
 
-	var reply pb.ValidateUserReply
+	var reply api.ValidateUserReply
 
 	replyBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -64,7 +62,7 @@ func (c *HttpClient) ValidateUserPassword(ctx context.Context, username, passwor
 	return &reply, err
 }
 
-func (c *HttpClient) GetUserInfo(ctx context.Context, username string) (*pb.GetUserInfoReply, error) {
+func (c *HttpClient) GetUserInfo(ctx context.Context, username string) (*api.GetUserInfoReply, error) {
 	req, err := http.NewRequest("GET", c.url("/user/"+username).String(), nil)
 	if err != nil {
 		return nil, err
@@ -77,7 +75,7 @@ func (c *HttpClient) GetUserInfo(ctx context.Context, username string) (*pb.GetU
 
 	defer resp.Body.Close()
 
-	var reply pb.GetUserInfoReply
+	var reply api.GetUserInfoReply
 
 	replyBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -89,7 +87,7 @@ func (c *HttpClient) GetUserInfo(ctx context.Context, username string) (*pb.GetU
 	return &reply, err
 }
 
-func (c *HttpClient) GetTokenInfo(ctx context.Context, token string) (*pb.GetTokenInfoReply, error) {
+func (c *HttpClient) GetTokenInfo(ctx context.Context, token string) (*api.GetTokenInfoReply, error) {
 	req, err := http.NewRequest("GET", c.url("/token/"+token).String(), nil)
 	if err != nil {
 		return nil, err
@@ -102,7 +100,7 @@ func (c *HttpClient) GetTokenInfo(ctx context.Context, token string) (*pb.GetTok
 
 	defer resp.Body.Close()
 
-	var reply pb.GetTokenInfoReply
+	var reply api.GetTokenInfoReply
 
 	replyBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

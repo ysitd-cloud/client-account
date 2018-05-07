@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	pb "code.ysitd.cloud/api/account"
+	api "code.ysitd.cloud/api/account"
 )
 
 type GatewayClient struct {
@@ -24,14 +24,12 @@ func (c *GatewayClient) url(path string) *url.URL {
 	return &u
 }
 
-func (c *GatewayClient) Close() {}
-
 func (c *GatewayClient) GetTransport() string {
 	return "https"
 }
 
-func (c *GatewayClient) ValidateUserPassword(ctx context.Context, username, password string) (*pb.ValidateUserReply, error) {
-	body, err := json.Marshal(&pb.ValidateUserRequest{
+func (c *GatewayClient) ValidateUserPassword(ctx context.Context, username, password string) (*api.ValidateUserReply, error) {
+	body, err := json.Marshal(&api.ValidateUserRequest{
 		Username: username,
 		Password: password,
 	})
@@ -51,7 +49,7 @@ func (c *GatewayClient) ValidateUserPassword(ctx context.Context, username, pass
 
 	defer resp.Body.Close()
 
-	var reply pb.ValidateUserReply
+	var reply api.ValidateUserReply
 
 	replyBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -63,14 +61,12 @@ func (c *GatewayClient) ValidateUserPassword(ctx context.Context, username, pass
 	return &reply, err
 }
 
-func (c *GatewayClient) GetUserInfo(ctx context.Context, username string) (*pb.GetUserInfoReply, error) {
+func (c *GatewayClient) GetUserInfo(ctx context.Context, username string) (*api.GetUserInfoReply, error) {
 	req, err := http.NewRequest("GET", c.url("/user/"+username).String(), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+c.Token)
-
 	resp, err := c.Client.Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, err
@@ -78,7 +74,7 @@ func (c *GatewayClient) GetUserInfo(ctx context.Context, username string) (*pb.G
 
 	defer resp.Body.Close()
 
-	var reply pb.GetUserInfoReply
+	var reply api.GetUserInfoReply
 
 	replyBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -90,13 +86,11 @@ func (c *GatewayClient) GetUserInfo(ctx context.Context, username string) (*pb.G
 	return &reply, err
 }
 
-func (c *GatewayClient) GetTokenInfo(ctx context.Context, token string) (*pb.GetTokenInfoReply, error) {
+func (c *GatewayClient) GetTokenInfo(ctx context.Context, token string) (*api.GetTokenInfoReply, error) {
 	req, err := http.NewRequest("GET", c.url("/token/"+token).String(), nil)
 	if err != nil {
 		return nil, err
 	}
-
-	req.Header.Set("Authorization", "Bearer "+c.Token)
 
 	resp, err := c.Client.Do(req.WithContext(ctx))
 	if err != nil {
@@ -105,7 +99,7 @@ func (c *GatewayClient) GetTokenInfo(ctx context.Context, token string) (*pb.Get
 
 	defer resp.Body.Close()
 
-	var reply pb.GetTokenInfoReply
+	var reply api.GetTokenInfoReply
 
 	replyBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

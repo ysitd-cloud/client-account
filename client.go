@@ -5,56 +5,46 @@ import (
 	"net/http"
 	"time"
 
-	"google.golang.org/grpc"
-
-	pb "code.ysitd.cloud/api/account"
+	api "code.ysitd.cloud/api/account"
 )
 
 type Client interface {
-	Close()
 	GetTransport() string
-	ValidateUserPassword(ctx context.Context, username, password string) (*pb.ValidateUserReply, error)
-	GetUserInfo(ctx context.Context, username string) (*pb.GetUserInfoReply, error)
-	GetTokenInfo(ctx context.Context, token string) (*pb.GetTokenInfoReply, error)
+	ValidateUserPassword(ctx context.Context, username, password string) (*api.ValidateUserReply, error)
+	GetUserInfo(ctx context.Context, username string) (*api.GetUserInfoReply, error)
+	GetTokenInfo(ctx context.Context, token string) (*api.GetTokenInfoReply, error)
 }
 
-func NewClient(transport, endpoint string) (Client, error) {
-	if transport == "grpc" {
+func NewClient(transport, endpoint string) Client {
+	if transport == TransportGrpc {
 		return NewGrpcClient(endpoint)
+	} else if transport == TransportGateway {
+		return NewGatewayClient(endpoint)
 	}
 
 	return NewHTTPClient(transport, endpoint)
 }
 
-func NewGrpcClient(endpoint string) (*GrpcClient, error) {
-	conn, err := grpc.Dial(endpoint, grpc.WithInsecure())
-	if err != nil {
-		return nil, err
-	}
-
-	client := pb.NewAccountClient(conn)
-
+func NewGrpcClient(endpoint string) *GrpcClient {
 	return &GrpcClient{
 		Open:   true,
-		Conn:   conn,
-		Client: client,
-	}, nil
+		Client: api.NewClient(endpoint),
+	}
 }
 
-func NewHTTPClient(transport, endpoint string) (*HttpClient, error) {
+func NewHTTPClient(transport, endpoint string) *HttpClient {
 	return &HttpClient{
 		Transport: transport,
 		Endpoint:  endpoint,
 		Client: &http.Client{
 			Timeout: 30 * time.Second,
 		},
-	}, nil
+	}
 }
 
-func NewGatewayClient(endpoint, token string) *GatewayClient {
+func NewGatewayClient(endpoint string) *GatewayClient {
 	return &GatewayClient{
 		Endpoint: endpoint,
-		Token:    token,
 		Client: &http.Client{
 			Timeout: 30 * time.Second,
 		},

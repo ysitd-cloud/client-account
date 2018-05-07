@@ -5,7 +5,7 @@
   branch = "master"
   name = "code.ysitd.cloud/api/account"
   packages = ["."]
-  revision = "c0eac60fd2cf356cfa84a7cd58dc6135e2c7cbc6"
+  revision = "da48a18ea9f492c562cab4012e9d590b765657da"
 
 [[projects]]
   name = "github.com/golang/protobuf"
@@ -32,7 +32,7 @@
     "lex/httplex",
     "trace"
   ]
-  revision = "640f4622ab692b87c2f3a94265e6f579fe38263d"
+  revision = "403019bfe6ed9ead9a45c35cfc2dd40e0c3788e2"
 
 [[projects]]
   name = "golang.org/x/text"

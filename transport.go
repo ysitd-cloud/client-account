@@ -1,7 +1,8 @@
 package account
 
 const (
-	Http  = "http"
-	Https = "https"
-	Grpc  = "grpc"
+	TransportHttp    = "http"
+	TransportHttps   = "https"
+	TransportGrpc    = "grpc"
+	TransportGateway = "gateway"
 )
